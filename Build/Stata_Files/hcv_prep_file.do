@@ -144,7 +144,7 @@ gen zip5=substr(els_zip_code,1,5)
 destring zip5, replace
 drop els_zip_code
 destring clr_recip_parish, replace
-bysort: clr_recip_id (service_ym): replace clr_recip_parish= ///
+bysort clr_recip_id (service_ym): replace clr_recip_parish= ///
 clr_recip_parish[_n-1] if clr_recip_parish==.
 gsort clr_recip_id -service_ym
 by clr_recip_id: replace clr_recip_parish= ///
