@@ -134,10 +134,14 @@ gen zip5=substr(els_zip_code,1,5)
 destring zip5, replace
 drop els_zip_code
 destring clr_recip_parish, replace
-replace clr_recip_parish=. if clr_recip_parish==77
+bysort: clr_recip_id (service_ym): replace clr_recip_parish= ///
+clr_recip_parish[_n-1] if clr_recip_parish==.
+gsort clr_recip_id -service_ym
+by clr_recip_id: replace clr_recip_parish= ///
+clr_recip_parish[_n-1] if clr_recip_parish==.
+replace clr_recip_parish=99 if clr_recip_parish==.
 replace clr_recip_parish=26 if clr_recip_parish==6
 rename clr_recip_parish parish
-replace parish=99 if parish==.
 gen birth_year=substr(els_birth_date,1,4)
 gen birth_month=substr(els_birth_date,5,2)
 destring birth_year, replace

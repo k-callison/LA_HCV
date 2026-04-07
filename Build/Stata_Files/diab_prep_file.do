@@ -145,10 +145,14 @@ gen zip5=substr(els_zip_code,1,5)
 destring zip5, replace
 drop els_zip_code
 destring clr_recip_parish, replace
-replace clr_recip_parish=. if clr_recip_parish==77
+bysort: clr_recip_id (service_ym): replace clr_recip_parish= ///
+clr_recip_parish[_n-1] if clr_recip_parish==.
+gsort clr_recip_id -service_ym
+by clr_recip_id: replace clr_recip_parish= ///
+clr_recip_parish[_n-1] if clr_recip_parish==.
+replace clr_recip_parish=99 if clr_recip_parish==.
 replace clr_recip_parish=26 if clr_recip_parish==6
 rename clr_recip_parish parish
-replace parish=99 if parish==.
 
 /*Race categories: 1=NH White, 2=NH Black, 3=Hispanic, 4=Other, 5=unknown*/
 destring els_ethnicity_code, replace
@@ -161,7 +165,6 @@ replace race=4 if inlist(els_race,"3","4","6","7","8","C","F","G")
 replace race=5 if inlist(els_race,"9","J")
 replace race=3 if els_race=="5" | (els_ethnicity_code>=2 & els_ethnicity_code<=4)
 drop race_temp
-
 
 gen hcv_flag=0
 keep if zip5>=70000 & zip5<=71497 /*Drop those who live outside Louisiana*/
