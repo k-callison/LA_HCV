@@ -1,0 +1,139 @@
+clear
+set more off
+
+global data "/Users/kcallison/Dropbox/Projects/LA_HCV/analysis/data/Figure_1_Data"
+
+/****Figure 1a - Average DAA Medicaid Prescription Price in Southern States******/
+use "/Users/kcallison/Dropbox/Projects/LA_HCV/analysis/data/Figure_1_Data/DAA_LRX_file.dta", clear
+keep if inlist(state,"AL","AR","DE","FL","GA","LA","MD","MS") | ///
+inlist(state,"NC","SC","TN","TX","VA","WV")
+keep if medicaid=="1"
+destring year, replace
+destring quarter, replace
+gen yq=yq(year,quarter)
+
+merge m:1 drug yq using "$data/daa_price_calc.dta", keep(match) nogen
+destring rxcount, replace
+
+collapse (sum) rxcount (mean) pills (mean) price, by(drug yq)
+gen drug_spend=rxcount*pills*price
+bysort yq (drug): egen sum_rx=sum(rxcount)
+by yq: egen sum_spend=sum(drug_spend)
+collapse (mean) sum_spend (mean) sum_rx, by(yq)
+gen avg_price=sum_spend/sum_rx
+
+label def dates 230 "Jul 2017" 234 "Jul 2018" 238 "Jul 2019" ///
+242 "Jul 2020" 246 "Jul 2021" 250 "Jul 2022" 254 "Jul 2023"
+label val yq dates
+
+format avg_price %13.0fc
+twoway connected avg_price yq, color(black) msize(small) msymbol(O) || ///
+pcarrowi 37500 240 32000 238.2, ///
+xline(238, lpattern(dash)) xlabel(230(4)254, labsize(small) valuelabel angle(45)) ///
+ylabel(0(20000)80000, gmax grid glcolor(gs14) glwidth(vthin)) ///
+xtitle("") ytitle("Average DAA Prescription Price", size(small)) scheme(lean2) ///
+legend(off) ///
+text(38500 244 "Subscription Model Begins", size(small))
+gr export "/Users/kcallison/Dropbox/Projects/LA_HCV/analysis/data/Figure_1_Data/fig_1a.eps", replace
+
+/****Figure 1b - Number Individuals Treated with DAAs in Louisiana Medicaid, Louisiana
+Non-Medicaid, and Southern States MedicaidSubscription Model Begins******/
+use "/Users/kcallison/Dropbox/Projects/LA_HCV/analysis/data/Figure_1_Data/DAA_LRX_file.dta", clear
+destring year, replace
+destring quarter, replace
+gen yq=yq(year,quarter)
+destring rxcount, replace
+destring medicaid, replace
+
+collapse (sum) rxcount, by(medicaid state yq)
+
+gen person_count=.
+replace person_count=82 if state=="LA" & medicaid==1 & yq==228
+replace person_count=128 if state=="LA" & medicaid==1 & yq==229
+replace person_count=175 if state=="LA" & medicaid==1 & yq==230
+replace person_count=195 if state=="LA" & medicaid==1 & yq==231
+replace person_count=207 if state=="LA" & medicaid==1 & yq==232
+replace person_count=224 if state=="LA" & medicaid==1 & yq==233
+replace person_count=251 if state=="LA" & medicaid==1 & yq==234
+replace person_count=242 if state=="LA" & medicaid==1 & yq==235
+replace person_count=223 if state=="LA" & medicaid==1 & yq==236
+replace person_count=221 if state=="LA" & medicaid==1 & yq==237
+replace person_count=1098 if state=="LA" & medicaid==1 &  yq==238
+replace person_count=1334 if state=="LA" & medicaid==1 & yq==239
+replace person_count=1205 if state=="LA" & medicaid==1 & yq==240
+replace person_count=795 if state=="LA" & medicaid==1 & yq==241
+replace person_count=730 if state=="LA" & medicaid==1 & yq==242
+replace person_count=737 if state=="LA" & medicaid==1 & yq==243
+replace person_count=750 if state=="LA" & medicaid==1 & yq==244
+replace person_count=908 if state=="LA" & medicaid==1 & yq==245
+replace person_count=577 if state=="LA" & medicaid==1 & yq==246
+replace person_count=484 if state=="LA" & medicaid==1 & yq==247
+replace person_count=514 if state=="LA" & medicaid==1 & yq==248
+replace person_count=632 if state=="LA" & medicaid==1 & yq==249
+replace person_count=539 if state=="LA" & medicaid==1 & yq==250
+replace person_count=574 if state=="LA" & medicaid==1 & yq==251
+replace person_count=558 if state=="LA" & medicaid==1 & yq==252
+replace person_count=548 if state=="LA" & medicaid==1 & yq==253
+replace person_count=394 if state=="LA" & medicaid==1 & yq==254
+replace person_count=403 if state=="LA" & medicaid==1 & yq==255
+
+replace person_count=626 if state=="LA" & medicaid==0 & yq==228
+replace person_count=753 if state=="LA" & medicaid==0 & yq==229
+replace person_count=621 if state=="LA" & medicaid==0 & yq==230
+replace person_count=726 if state=="LA" & medicaid==0 & yq==231
+replace person_count=723 if state=="LA" & medicaid==0 & yq==232
+replace person_count=633 if state=="LA" & medicaid==0 & yq==233
+replace person_count=526 if state=="LA" & medicaid==0 & yq==234
+replace person_count=533 if state=="LA" & medicaid==0 & yq==235
+replace person_count=503 if state=="LA" & medicaid==0 & yq==236
+replace person_count=565 if state=="LA" & medicaid==0 & yq==237
+replace person_count=520 if state=="LA" & medicaid==0 &  yq==238
+replace person_count=552 if state=="LA" & medicaid==0 & yq==239
+replace person_count=542 if state=="LA" & medicaid==0 & yq==240
+replace person_count=435 if state=="LA" & medicaid==0 & yq==241
+replace person_count=400 if state=="LA" & medicaid==0 & yq==242
+replace person_count=384 if state=="LA" & medicaid==0 & yq==243
+replace person_count=371 if state=="LA" & medicaid==0 & yq==244
+replace person_count=456 if state=="LA" & medicaid==0 & yq==245
+replace person_count=383 if state=="LA" & medicaid==0 & yq==246
+replace person_count=394 if state=="LA" & medicaid==0 & yq==247
+replace person_count=413 if state=="LA" & medicaid==0 & yq==248
+replace person_count=415 if state=="LA" & medicaid==0 & yq==249
+replace person_count=406 if state=="LA" & medicaid==0 & yq==250
+replace person_count=400 if state=="LA" & medicaid==0 & yq==251
+replace person_count=406 if state=="LA" & medicaid==0 & yq==252
+replace person_count=420 if state=="LA" & medicaid==0 & yq==253
+replace person_count=358 if state=="LA" & medicaid==0 & yq==254
+replace person_count=421 if state=="LA" & medicaid==0 & yq==255
+
+gen rx_person=rxcount/person_count
+bysort medicaid yq: ereplace rx_person=max(rx_person)
+
+sort state yq medicaid
+replace person_count=rxcount/rx_person
+
+preserve
+keep if inlist(state,"AL","AR","DE","FL","GA","LA","MD","MS") | ///
+inlist(state,"NC","SC","TN","TX","VA","WV")
+gen treat=state=="LA"
+collapse (mean) person_count, by(yq treat medicaid)
+
+label def dates 230 "Jul 2017" 234 "Jul 2018" 238 "Jul 2019" ///
+242 "Jul 2020" 246 "Jul 2021" 250 "Jul 2022" 254 "Jul 2023"
+label val yq dates
+
+format person_count %13.0fc
+twoway connected person_count yq if medicaid==1 & treat==1, color(black) msize(small) msymbol(O) || ///
+connected person_count yq if medicaid==0 & treat==1, color(black) msize(small) msymbol(D) lpattern(dash) || ///
+connected person_count yq if medicaid==1 & treat==0, color(black) msize(small) msymbol(T) lpattern(shortdash) || ///
+pcarrowi 1250 235.75 1225 237.7, ///
+xline(238, lpattern(dash)) xlabel(230(4)254, labsize(small) valuelabel angle(45)) ///
+ylabel(0(300)1500, gmax grid glcolor(gs14) glwidth(vthin)) ///
+xtitle("") ytitle("Individuals Treated with DAAs", size(small)) scheme(lean2) ///
+legend(order(1 "Louisiana Medicaid" 2 "Louisiana Non-Medicaid" /// 
+3 "Southern Medicaid States") pos(6) col(2) size(small)) ///
+text(1300 232 "Subscription Model Begins", size(small))
+gr export "/Users/kcallison/Dropbox/Projects/LA_HCV/analysis/data/Figure_1_Data/fig_1b.eps", replace
+
+
+restore
