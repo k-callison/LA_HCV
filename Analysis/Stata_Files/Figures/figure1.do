@@ -36,6 +36,73 @@ legend(off) ///
 text(38500 244 "Subscription Model Begins", size(small))
 gr export "/Users/kcallison/Dropbox/Projects/LA_HCV/analysis/data/Figure_1_Data/fig_1a.eps", replace
 
+/*Counterfactual 2 Spending Estimate*/
+set obs 30
+replace yq=256 in 29
+replace yq=257 in 30
+replace avg_price=avg_price[_n-1] if avg_price==.
+gen la_med_rx_stock=.
+replace la_med_rx_stock=101 if yq==228
+replace la_med_rx_stock=172 if yq==229
+replace la_med_rx_stock=148 if yq==230
+replace la_med_rx_stock=146 if yq==231
+replace la_med_rx_stock=197 if yq==232
+replace la_med_rx_stock=271 if yq==233
+replace la_med_rx_stock=316 if yq==234
+replace la_med_rx_stock=308 if yq==235
+replace la_med_rx_stock=262 if yq==236
+replace la_med_rx_stock=267 if yq==237
+replace la_med_rx_stock=1349 if yq==238
+replace la_med_rx_stock=885 if yq==239
+replace la_med_rx_stock=653 if yq==240
+replace la_med_rx_stock=333 if yq==241
+replace la_med_rx_stock=387 if yq==242
+replace la_med_rx_stock=360 if yq==243
+replace la_med_rx_stock=335 if yq==244
+replace la_med_rx_stock=316 if yq==245
+replace la_med_rx_stock=213 if yq==246
+replace la_med_rx_stock=209 if yq==247
+replace la_med_rx_stock=196 if yq==248
+replace la_med_rx_stock=203 if yq==249
+replace la_med_rx_stock=204 if yq==250
+replace la_med_rx_stock=172 if yq==251
+replace la_med_rx_stock=172 if yq==252
+replace la_med_rx_stock=149 if yq==253
+replace la_med_rx_stock=136 if yq==254
+replace la_med_rx_stock=119 if yq==255
+replace la_med_rx_stock=130 if yq==256
+replace la_med_rx_stock=135 if yq==257
+gen la_med_rx_flow=.
+replace la_med_rx_flow=144 if yq==238
+replace la_med_rx_flow=334 if yq==239
+replace la_med_rx_flow=408 if yq==240
+replace la_med_rx_flow=235 if yq==241
+replace la_med_rx_flow=346 if yq==242
+replace la_med_rx_flow=364 if yq==243
+replace la_med_rx_flow=412 if yq==244
+replace la_med_rx_flow=368 if yq==245
+replace la_med_rx_flow=327 if yq==246
+replace la_med_rx_flow=358 if yq==247
+replace la_med_rx_flow=300 if yq==248
+replace la_med_rx_flow=427 if yq==249
+replace la_med_rx_flow=364 if yq==250
+replace la_med_rx_flow=344 if yq==251
+replace la_med_rx_flow=365 if yq==252
+replace la_med_rx_flow=347 if yq==253
+replace la_med_rx_flow=319 if yq==254
+replace la_med_rx_flow=295 if yq==255
+replace la_med_rx_flow=266 if yq==256
+replace la_med_rx_flow=305 if yq==257
+replace la_med_rx_flow=0 if la_med_rx_flow==.
+gen la_med_rx_total=la_med_rx_stock+la_med_rx_flow
+
+gen counter2_spend=avg_price*la_med_rx_total
+egen sum_counter2_spend=sum(counter2_spend) if yq>=238
+format sum_counter2_spend %13.0fc
+sum sum_counter2_spend
+
+sum la_med_rx_stock if yq<238
+
 /****Figure 1b - Number Individuals Treated with DAAs in Louisiana Medicaid, Louisiana
 Non-Medicaid, and Southern States Medicaid******/
 use "/Users/kcallison/Dropbox/Projects/LA_HCV/analysis/data/Figure_1_Data/DAA_LRX_file.dta", clear
